@@ -1,0 +1,37 @@
+# Test Profile Configuration
+spring:
+  # Test Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+
+  # JPA Configuration for Tests
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # Disable H2 Console in Tests
+  h2:
+    console:
+      enabled: false
+
+# local.server.port removed so SpringBootTest can bind to a RANDOM_PORT and @LocalServerPort picks the right value
+# local:
+#   server:
+#     port: 8087  # Removed: let Spring pick a random port during tests
+
+# Logging Configuration for Tests
+logging:
+  level:
+    root: INFO
+    com.example.demo: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

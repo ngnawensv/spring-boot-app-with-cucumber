@@ -1,0 +1,95 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '4.0.1'
+  id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'cm.belrose'
+version = '0.0.1-SNAPSHOT'
+description = 'Integration cucumber in my spring boot application'
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+ext {
+  cucumberVersion = '7.33.0'
+}
+
+dependencies {
+
+  // H2 Database
+  implementation 'org.springframework.boot:spring-boot-h2console'
+  runtimeOnly 'com.h2database:h2'
+
+  // Spring Boot Starters
+  implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+  // Lombok
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
+
+  // For test scope as well
+  testCompileOnly 'org.projectlombok:lombok'
+  testAnnotationProcessor 'org.projectlombok:lombok'
+
+  // Spring Boot Test
+  testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+  // Cucumber Dependencies
+  testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+  testImplementation "io.cucumber:cucumber-spring:${cucumberVersion}"
+  testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+
+  // JUnit Platform (for running Cucumber tests)
+  testImplementation 'org.junit.platform:junit-platform-suite'
+  testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+
+  // Show test output
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat = "full"  // FIXED: Using = instead of space
+    showStandardStreams = true
+  }
+}
+
+// Task to run only smoke tests
+tasks.register('smokeTest', Test) {
+  useJUnitPlatform()
+  systemProperty 'cucumber.filter.tags', '@Smoke'
+  systemProperty 'cucumber.plugin', 'pretty, html:build/reports/cucumber/smoke-tests.html'
+  testLogging {
+    events "passed", "skipped", "failed"
+    showStandardStreams = true
+  }
+}
+
+// Task to run regression tests
+tasks.register('regressionTest', Test) {
+  useJUnitPlatform()
+  systemProperty 'cucumber.filter.tags', '@Regression and not @Slow'
+  systemProperty 'cucumber.plugin', 'pretty, html:build/reports/cucumber/regression-tests.html'
+  testLogging {
+    events "passed", "skipped", "failed"
+    showStandardStreams = true
+  }
+}
