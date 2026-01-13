@@ -83,5 +83,3 @@ If you'd like, I can:
 - Open a PR adding `README.md` to the repo (if desired workflow)
 - Generate an OpenAPI spec for the API
 - Add a small improvement (e.g., handle `DataIntegrityViolationException`) and run tests
-
-Tell me which of these (if any) you want next.
